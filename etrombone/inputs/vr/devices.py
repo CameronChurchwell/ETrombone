@@ -1,7 +1,5 @@
 """
-pyopenxr example program track_controller.py
-
-Prints the position of your right-hand controller for 30 frames.
+Get input from OpenXR controllers
 """
 
 import ctypes

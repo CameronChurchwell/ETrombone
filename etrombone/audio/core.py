@@ -1,3 +1,7 @@
+"""
+Core audio processing file
+"""
+
 from pedalboard import Pedalboard, Chorus, Compressor, Delay, Gain, Reverb, Phaser
 from pedalboard.io import AudioStream
 
@@ -29,6 +33,8 @@ with AudioStream(
             print('done!')
             break
 
+
+# Code for working with serial input (one button instrument)
 # import serial
 # with serial.Serial('/dev/tty.usbmodem142101') as usb:
 #     while True:
