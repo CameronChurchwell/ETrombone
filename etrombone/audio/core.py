@@ -4,45 +4,42 @@ Core audio processing file
 
 from pedalboard import Pedalboard, Chorus, Compressor, Delay, Gain, Reverb, Phaser
 from pedalboard._pedalboard import load_plugin
+from etrombone.inputs import getControllerPosition
 from pedalboard.io import AudioStream
 from pathlib import Path
+import numpy as np
 
-audio_dir = Path(__file__).parent
+audio_assets_dir = Path(__file__).parent / 'assets'
+plugin = load_plugin(str(audio_assets_dir / 'bbc.vst3'))
+plugin.show_editor()
 
-brass_path = audio_dir / 'assets' / 'Aeternus Brass.vst3'
-brass = load_plugin(str(brass_path))
+gen = getControllerPosition()
+initial_position = next(gen)
 
-# Open up an audio stream:
+states = [False] * 100
 with AudioStream(
-    input_device_name="MacBook Pro Microphone",  # Guitar interface
-    output_device_name="MacBook Pro Speakers",
-    allow_feedback=True
+    input_device_name="Microphone (Yeti Nano)",
+    output_device_name="Speakers (FiiO Q series)",
+    allow_feedback=True,
+    buffer_size=16000
 ) as stream:
-    # Audio is now streaming through this pedalboard and out of your speakers!
+    stream.plugins = Pedalboard([
+        plugin,
+        # Reverb(room_size=0.25),
+    ])
     while True:
-        try:
-            # reverb = input("enter reverb value [0-1]: ")
-            stream.plugins = Pedalboard([
-                # Compressor(threshold_db=-50, ratio=25),
-                # Gain(gain_db=30),
-                # Chorus(),
-                # Phaser(),
-                # Reverb(room_size=float(reverb)),
-                brass
-            ])
-        except KeyboardInterrupt:
-            print('done!')
-            break
-
-
-# Code for working with serial input (one button instrument)
-# import serial
-# with serial.Serial('/dev/tty.usbmodem142101') as usb:
-#     while True:
-#         if usb.in_waiting >= 3:
-#             line = usb.readline()
-#             value = int(line.decode('utf-8')[0])
-#             if value:
-#                 play(a440)
-
-# The live AudioStream is now closed, and audio has stopped.
+        input("hit enter to trigger note")
+        current_position = next(gen)
+        distance = np.linalg.norm(current_position-initial_position)
+        print(distance)
+        if distance < 0.5:
+            note = 69
+        else:
+            note = 70
+        print(note)
+        if states[note]: #playing
+            print(plugin.midi_note_off(noteNumber=note, sampleNumber=1))
+            states[note] = not states[note]
+        else:
+            print(plugin.midi_note_on(noteNumber=note, sampleNumber=1))
+            states[note] = not states[note]
