@@ -1,1 +1,1 @@
-from .devices import getControllerPosition
+from .controller import getControllerState

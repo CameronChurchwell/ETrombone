@@ -1,1 +1,1 @@
-from .vr import getControllerPosition
+from .vr import getControllerState

@@ -4,7 +4,7 @@ Core audio processing file
 
 from pedalboard import Pedalboard, Chorus, Compressor, Delay, Gain, Reverb, Phaser
 from pedalboard._pedalboard import load_plugin
-from etrombone.inputs import getControllerPosition
+from etrombone.inputs import getControllerState
 from pedalboard.io import AudioStream
 from pathlib import Path
 import numpy as np
@@ -13,7 +13,7 @@ audio_assets_dir = Path(__file__).parent / 'assets'
 plugin = load_plugin(str(audio_assets_dir / 'bbc.vst3'))
 plugin.show_editor()
 
-gen = getControllerPosition()
+gen = getControllerState()
 initial_position = next(gen)
 
 states = [False] * 100
