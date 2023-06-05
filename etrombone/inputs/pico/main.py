@@ -92,7 +92,7 @@ class ThreadSafeQueue:  # MicroPython optimised
 
 
 if __name__ == '__main__':
-    print('starting demo')
+    print('starting pitch detector...')
 
     from machine import Pin, ADC, Timer
     import array
@@ -131,6 +131,8 @@ if __name__ == '__main__':
     async def run():
         global tsq
         global uart
+        playing = False
+        print("startup complete")
         while True:
             if tsq.qsize() >= window_size:
                 window = await tsq.get_as_array(window_size)
@@ -141,9 +143,14 @@ if __name__ == '__main__':
                 # not scaled relative to anything meaningful
                 max_db = 10*np.log10(max_power/np.median(power_spectrogram))
                 if max_db >= 20:
+                    playing = True
                     freq = max_idx * scaler
                     uart.write(str(freq) + '\n')
                     print(freq, max_db)
+                else:
+                    if playing:
+                        uart.write(str(0) + '\n')
+                        playing = False
 
     try:
         asyncio.run(run())
