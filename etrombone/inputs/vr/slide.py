@@ -44,6 +44,12 @@ class Slide():
         off_slide_position /= slide_length #length <= 1
 
         return np.dot(off_slide_position, stop_position)
+    
+    def getPositionAndOffset(self):
+        """Return the position of the slide (1-7) and the offset"""
+
+        value = self.getSlideValue()
+        raise NotImplementedError("not implemented")
         
 
 

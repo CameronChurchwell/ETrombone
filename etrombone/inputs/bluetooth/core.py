@@ -19,7 +19,9 @@ async def uart(rx_handler):
 
     def match_nus_uuid(device: BLEDevice, adv: AdvertisementData):
         if device.name == 'w':
+            print('found device "w", looking for UART UUID')
             if UART_SERVICE_UUID.lower() in adv.service_uuids:
+                print('found UART service, connecting...')
                 return True
 
         return False
@@ -42,6 +44,7 @@ async def uart(rx_handler):
 
     print('trying to connect')
     async with BleakClient(device, disconnected_callback=handle_disconnect) as client:
+        print("connected!")
         # await client.start_notify(UART_TX_CHAR_UUID, handle_rx)
         await client.start_notify(UART_TX_CHAR_UUID, rx_handler)
         print('connected')
